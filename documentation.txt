@@ -1,0 +1,154 @@
+\\
+{toc}
+
+h2. What is EvoGallery?
+
+EvoGallery is a dynamic gallery extra for MODx Evolution. It allows you to quickly and easily create galleries of images by associating them with any page on your site. Galleries can be outputted in a variety of ways using a templated system.
+
+h2. Requirements
+
+* MODx Evolution 1.0 or later
+* PHP5 or later
+
+h2. History
+
+EvoGallery was originally written by Brian Stanback some years ago and was simply known as the Gallery Module. Jeff Whitfield later took it and rewrote all the javascript using jQuery and used the Uploadify jQuery plugin in an effort to make the uploader compatible with newer versions of Flash. Many updates have been made since then to give it more functionality. The name was changed later to EvoGallery in order to differentiate this add-on from many of the other "gallery" add-ons including ones for MODx Revolution.
+
+h3. Public Releases
+
+||Version||Date||
+|1.0.0-beta1|May 13th, 2010|
+
+h3. Download
+
+EvoGallery will available in the MODx Extras Repository very soon! 
+
+This add-on should NOT be confused with the Gallery add-on for MODx Revolution. EvoGallery does not create stand-alone, self-contained galleries that are not associated with a particular page. Every photo uploaded must be associated with a page in the site tree.
+
+h2. Install
+
+To install EvoGallery, unzip the downloaded file and follow the following steps:
+
+* Create a directory called 'galleries' in the assets directory of your MODx site and give it full write permissions (777).
+* Copy/Upload the assets/modules/evogallery directory to the assets/modules directory of your MODx site.
+* Copy/Upload the assets/snippets/evogallery directory to the assets/evosnippets directory of your MODx site.
+* (Optional) Copy/Upload the assets/plugins/managermanager/functions/gallerylink.inc.php file to the assets/plugins/managermanager/functions directory of your MODx site.
+* Copy/Upload the install directory to the root directory of your MODx site
+* Run the installer (http://yoursite/install/index.php) and follow the simple on-screen instructions to complete the installation.
+
+Once you've completed the installation, be sure and remove the installer directory from your site.
+
+h2. Usage
+
+EvoGallery requires the use of both a module and a snippet to achieve full functionality:
+
+h3. Module
+
+The EvoGallery module allows you to manage all the photos that are associated with the various pages of your site. After clicking on the EvoGallery item under Modules, you'll be presented with a top-level list of pages from the site tree:
+
+!evogallery_docs_01.png!
+
+From there, simply click on the links to drill down to the page you wish to manage:
+
+!evogallery_docs_02.png!
+
+Uploading photos is as easy as clicking on the Select Files button and choosing the photos you want to upload. The files you select will be added to the queue: 
+
+!evogallery_docs_03.png!
+
+To upload the photos, simply click on the Upload Files link below the queue. Each photo will then be uploaded and, along with each photo, a thumbnail will be created. Both photos and thumbnails are processed and resized based on the module configuration (more on that in a second):
+
+!evogallery_docs_04.png!
+
+Once a photo is uploaded, you can manage the additional properties of the image simply by hovering over an image and clicking on the edit icon. A lightbox will popup that will allow you to update the title, description, and keywords for the image as well as the ability to upload and replace the existing image with a new one:
+
+!evogallery_docs_05.png!
+
+If you need to delete an image, simply hover over the thumbnail of an image and click on the red 'X'. You can also reorder the order of the images simply by dragging and dropping images in the order you want and then clicking on the 'Save Order' button.
+
+h4. Configuration
+
+Advanced configuration options are available through the config.inc.php file in the /assets/modules/evogallery directory:
+
+||Name||Description||Default Value||
+|imageSize|Max dimension, in pixels, for the full-size images|940|
+|imageQuality|Quality for generated images|85|
+|thumbSize|Max dimension, in pixels, for the generated thumbnail images|175|
+|thumbQuality|Quality for generated thumbnails (1-100)|75|
+|docId|Id of the document root to begin listing galleries for (0 for all documents)|0|
+|savePath|Full system path to location of product images|assets/galleries|
+|modulePath|Path to the module directory|assets/modules/evogallery/|
+
+Any of these parameters can be set directly within the config.inc.php file or through the properties of the module itself within the manager.
+
+h3. Snippet
+
+Once you've added images to some pages, you then have to output the various images and galleries to the front-end of the site. The EvoGallery snippet allows you to generate lists of your images and galleries in a variety of ways.
+
+h4. Display
+
+EvoGallery has three basic display modes when calling the snippet:
+
+* galleries
+* images
+* single
+
+The 'galleries' mode allows you to display a list of available galleries in a container. By default, the document ID is set to the current document but can be overridden using the 'docId' property.
+
+The 'images' mode allows you to display a list of images associated with a given page.  By default, the document ID is set to the current document but, just like the 'galleries' mode, it can be overridden using the 'docId' property.
+
+The 'single' mode allows you to display a single image provided that you know the ID of it in the database. Generally, this information is determined through a separate snippet instance in 'images' mode before passing it on to another instance. By default, this mode looks for a 'picId' variable via a standard PHP request variable.
+
+h4. Types
+
+The 'type' property tells the snippet what default templates to use when outputting the list of images or galleries. If you look in the EvoGallery snippet directory (/assets/snippets/evogallery/), you notice that there is a classes folder as well as a few other folders (jquery-cycle, simple-list, and single). These correspond to the available types that can be assigned to the snippet.
+
+If you look inside a type folder, you'll notice three files: tpl.config.txt, tpl.default.txt, and tpl.item.default.txt.  These files are used to set the default templates for the given type. Other files could be used to set the default templates for the first, last, and alternate items (tpl.item.first.txt, tpl.item.last.txt, and tpl.item.alt.txt respectively).
+
+The tpl.config.txt file allows you to set which CSS and script files to load when the gallery is called. To add a file, simply create a new line after one of the three designated file type areas: @EXTSCRIPT, @SCRIPT, or @CSS. @EXTSCRIPT is for scripts that are meant to be loaded outside of the given type directly. This allows you to load script files using either a direct URL or a path that's root relative to your site. @SCRIPT is for script files that reside inside the given type directory. @CSS is for CSS files that reside inside the given type directory. If you create subdirectories within the type directory, be sure that the paths written for lines in the @SCRIPT and @CSS sections are relative to your root type directory.
+
+While you may use a custom type to assign templates to the EvoGallery snippet, it's not always necessary to do so. You could leave the 'type' property out and simply assign chunks to the various templates. Since the default type doesn't have any CSS or script files assigned for the tpl.config.txt, you're free to create a snippet call made up of entirely assigned chunk templates.
+
+h4. Other Properties
+
+||Name||Description||Default Value||
+|display|Have the snippet output either a list of galleries within the specified doc Id, a list of images within a gallery, or a single image based on a pic Id. Possible values: galleries, images, single|images|
+|type|Output type, if specified, the snippet will automatically load the required javascript. Current types: simple-list, single, jquery-cycle|simple-list|
+|includeAssets|Register external scripts and CSS files required by the specified gallery type. If set to 0, these will need to be included manually in the document <head>|1|
+|picId|ID of specific pic to show when displaying by a single image|$_REQUEST[ 'picId' ]|
+|docId|Document ID for which to display gallery (default: document from which snippet was called). Multiple document id's can be specified by commas (no spaces), or * for all documents|$modx->documentIdentifier|
+|gallerySortBy|Galleries sort order (possible fields: id, pagetitle, longtitle, description, alias, pub_date, introtext, editedby, editedon, publishedon, publishedby, menutitle) or RAND()|menuindex|
+|gallerySortDir|Direction to sort the galleries ASC or DESC|ASC|
+|ignoreHidden|Display documents marked as hidden in the gallery listing|0|
+|excludeDocs|Prevent the specified documents from showing in the gallery listing. Multiple document id's can be specified by commas (no spaces).|0|
+|sortBy|Sort items by field (possible fields: id, content_id, filename, title, description, sortorder) or RAND()|id|
+|sortDir|Direction to sort the items ASC or DESC|ASC|
+|limit|Limit the number of items to display|null|
+|tags|Comma delimited set of tags to filter results by|null|
+|tagMode|Search mode for tag: AND or OR|AND|
+|tpl|Chunk template for the outer gallery template (defaults to tpl.default.txt for selected type). Placeholders: items|null|
+|itemTpl|Chunk template for each thumbnail/image in the gallery (defaults to tpl.item.default.txt for selected type)|null|
+|itemTplFirst|Chunk template for last thumbnail/image in the gallery (defaults to tpl.item.first.txt for selected type)|null|
+|itemTplLast|Chunk template for last thumbnail/image in the gallery (defaults to tpl.item.last.txt for selected type)|null|
+|itemTplAlt|Chunk template for alternate thumbnail/image in the gallery (defaults to tpl.item.alt.txt for selected type)|null|
+|itemAltNum|Modifier for the alternate thumbnail/image (defaults to every second item)|2|
+|galleriesUrl|URL to the galleries directory (should contain folders with the Id of the document, with a thumbs/ folder within each document's gallery)|$modx->config[ 'base_url' ] . 'assets/galleries/'|
+|galleriesPath|Path to the galleries directory|$modx->config[ 'base_path' ] . 'assets/galleries/'|
+|snippetUrl|URL to the snippet directory|$modx->config[ 'base_url' ] . 'assets/snippets/evogallery/'|
+|snippetPath|Path to the snippet directory|$modx->config[ 'base_path' ] . 'assets/snippets/evogallery/'|
+
+h4. Examples
+
+Output a list of images using the jQuery Cycle type (jquery-cycle):
+
+{code}
+[[EvoGallery? &display=`images` &type=`jquery-cycle`]]
+{code}
+
+Output the galleries available in a specific container using a specific item template:
+
+{code}
+[[EvoGallery? &display=`galleries` &docId=`22` &itemTpl=`galleryListItem`]]
+{code}
+
+{scrollbar}
