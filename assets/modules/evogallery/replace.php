@@ -132,10 +132,30 @@ function resizeImage($filename, $target, $target_size = 110, $target_quality = 7
 			}
 
 			$new_img = imagecreatetruecolor($new_width, $new_height);
-			if (!@imagefilledrectangle($new_img, 0, 0, $new_width, $new_height, 0)) return false;  // Could not fill image
+			
+			//if png
+			if ($info[2]=3){
+				imagealphablending( $new_img, false );
+				imagesavealpha( $new_img, true );
+				if (!@imagefilledrectangle($new_img, 0, 0, $new_width, $new_height, imagecolorallocatealpha($new_img,0,0,0,127) )) return false;  // Could not fill image
+			}
+			else{
+				if (!@imagefilledrectangle($new_img, 0, 0, $new_width, $new_height, 0 )) return false;  // Could not fill image
+			}
 			if (!@imagecopyresampled($new_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height)) return false;  // Could not resize image
 
-			imagejpeg($new_img, $target, $target_quality);  // Save resulting thumbnail
+			switch ($info[2])  // Check image type and save appropriate thumbnail
+			{
+				case 1:
+					imagegif($new_img, $target);
+					break;
+				case 2:
+					imagejpeg($new_img, $target, $target_quality);
+					break;
+				case 3:
+					imagepng($new_img, $target);
+					break;
+			}
 			imagedestroy($new_img);
 		}
 	}
