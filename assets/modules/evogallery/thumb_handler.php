@@ -16,7 +16,20 @@ $target = $savePath . $content_id . '/' . $params['thumbsPath'] . $params['thumb
 if (file_exists($target) && is_file($target))  // Output image
 {
 	$mtime = filemtime($target);
-	header("Content-type: image/jpeg");
+	$info = @getimagesize($target);
+	switch ($info){
+		case 1:
+			header("Content-type: image/gif");
+			break;
+		case 2:
+			header("Content-type: image/jpeg");
+			break;
+		case 3:
+		default:
+			header("Content-type: image/png");
+			break;
+	}
+
 	if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) and (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $mtime))
 	{
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT", true, 304);
