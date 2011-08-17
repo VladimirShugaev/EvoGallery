@@ -72,7 +72,13 @@ if (is_uploaded_file($_FILES['Filedata']['tmp_name'])){
 		'filename' => $modx->db->escape($_FILES['Filedata']['name'])
 	);
 	$modx->db->update($fields, $modx->getFullTableName('portfolio_galleries'), "filename='".urldecode($_POST['edit'])."' AND content_id='" . intval($_POST['content_id']) . "'");
-	
+	$modx->clearCache();
+	include_once $modx->config['base_path']."manager/processors/cache_sync.class.processor.php";
+	$sync = new synccache();
+	$sync->setCachepath(MODX_BASE_PATH . "assets/cache/");
+	$sync->setReport(false);
+	$sync->emptyCache();
+
     echo "1";
 }
 
