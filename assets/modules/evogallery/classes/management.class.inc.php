@@ -307,6 +307,7 @@ class GalleryManagement
 				foreach ($_POST['sort'] as $key => $filename)
 				{
 					$modx->db->update("sortorder='" . $key . "'", $modx->getFullTableName($this->galleriesTable), "filename='" . urldecode($filename) . "' AND content_id='" . $content_id . "'");
+					$this->clearCache($modx);
 				}
 			}
 			elseif (isset($_GET['delete']))  // Delete requested image
@@ -323,6 +324,7 @@ class GalleryManagement
 
 					// Remove record from database
 					$modx->db->delete($modx->getFullTableName($this->galleriesTable), "filename='" . urldecode($_GET['delete']) . "' AND content_id='" . $content_id . "'");
+					$this->clearCache($modx);
 				}
 			}
 			elseif (isset($_POST['edit']))  // Update image information
@@ -331,6 +333,7 @@ class GalleryManagement
 				$fields['description'] = isset($_POST['description']) ? addslashes($_POST['description']) : '';
 				$fields['keywords'] = isset($_POST['keywords']) ? addslashes($_POST['keywords']) : '';
 				$modx->db->update($fields, $modx->getFullTableName($this->galleriesTable), "id='" . intval($_POST['edit']) . "'");
+				$this->clearCache($modx);
 			}
 
 			$tpl = file_get_contents($this->config['modulePath'] . 'templates/' . $this->uploadTemplate);
@@ -524,5 +527,14 @@ class GalleryManagement
 		return $_lang;
 		
     }  
+	
+	function clearCache (&$modx) {
+		$modx->clearCache();
+		include_once $modx->config['base_path']."manager/processors/cache_sync.class.processor.php";
+		$sync = new synccache();
+		$sync->setCachepath(MODX_BASE_PATH . "assets/cache/");
+		$sync->setReport(false);
+		$sync->emptyCache();
+	}
 }
 ?>
